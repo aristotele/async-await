@@ -11,37 +11,19 @@
 
 
 <script>
-    function loadScript(src, callback) {
+    let promise = new Promise(function (resolve, reject) {
+        console.log("Init doing stuff...");
 
-        // Timeout simply simulate network latency (could be removed)
         setTimeout(() => {
-            let dummyVariableToReturnOnSuccess = 'Dummy String To Return On Success';
+            // the executor should perform a job(usually something that takes time) and then call resolve or reject to change the state of the corresponding promise object.
+            // resolve / reject expect only one argument(or none) and will ignore additional arguments.
 
-            let script = document.createElement('script');
-            script.src = src;
-            // script.src = 'not-valid-script-path; // to uncomment for see error handling
-
-            script.onload = () => {
-                callback(null, dummyVariableToReturnOnSuccess);
-            };
-
-            script.onerror = () => {
-                callback(new Error(`Zio, errore nel caricare ${src}`));
-            }
-
-            document.head.append(script);
+            resolve("Finished doing stuff.")
+            // reject(new Error("Whoops!"))
         }, 1000)
-    }
-
-
-    loadScript('js/dummyLoadScript.js', (error, result) => {
-        if (error) {
-            console.error(error);
-        } else {
-            console.log(result);
-            // functionInLate();
-        }
     });
+
+    // Per vedere risultato -> stampa nella console del browser la variabile promise
 </script>
 
 </body>
