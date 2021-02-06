@@ -11,25 +11,34 @@
 
 
 <script>
-    class Thenable {
-        constructor(num) {
-            this.num = num;
-        }
-
-        then(resolve, reject) {
-            console.log(resolve);
-
-            setTimeout(() => {
-                resolve(this.num * 2)
-            }, 1000);
-        }
+    function loadJson(url) {
+        return fetch(url)
+            .then(response => { return response.json() })
     }
 
-    new Promise(resolve => resolve(3))
-        .then(result => {
-            return new Thenable(result);
-        })
-        .then(result => console.log(result))
+    function loadGithubUserData(name) {
+        return loadJson(`https://api.github.com/users/${name}`)
+    }
+
+    function showAvatar(githubUser) {
+        return new Promise(resolve => {
+            let img = document.createElement('img');
+            img.src = githubUser.avatar_url;
+            img.style.height = '100px'
+            img.style.width = '100px'
+            document.body.append(img);
+
+            setTimeout(() => {
+                img.remove()
+                resolve(githubUser);
+            }, 1000);
+        });
+    }
+
+    loadJson('js/githubUser.json')
+        .then(user => loadGithubUserData(user.name))
+        .then(showAvatar) // equivalent to .then(githubUser => showAvatar(githubUser))
+        .then(githubUser => console.log(`Removed image of ${githubUser.name}!`))
 </script>
 
 </body>
