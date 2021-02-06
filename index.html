@@ -19,9 +19,20 @@
             // resolve / reject expect only one argument(or none) and will ignore additional arguments.
 
             resolve("Finished doing stuff.")
-            // reject(new Error("Whoops!"))
+            reject(new Error("Whoops!"))
         }, 1000)
     });
+
+    promise.then(
+        // The first argument of.then is a function that runs when the promise is resolved, and receives the result.
+        function (result) {
+            alert(result);
+        },
+        // The second argument of.then is a function that runs when the promise is rejected, and receives the error.
+        function (error) {
+            alert(error);
+        }
+    );
 
     // Per vedere risultato -> stampa nella console del browser la variabile promise
 </script>
