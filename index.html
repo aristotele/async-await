@@ -11,24 +11,40 @@
 
 
 <script>
-    let promise = new Promise(function (resolve, reject) {
-        console.log("Init doing stuff...");
+    // GOLD differences PROMISES vs CALLBACKS: https://javascript.info/promise-basics
+    function loadScript(src) {
+        return new Promise(function(resolve, reject) {
+            // Timeout simply simulate network latency (could be removed)
+            setTimeout(() => {
+                let script = document.createElement('script');
+                script.src = src;
+                // script.src = 'not-valid-script-path; // to uncomment for see error handling';
 
-        setTimeout(() => {
-            // the executor should perform a job(usually something that takes time) and then call resolve or reject to change the state of the corresponding promise object.
-            // resolve / reject expect only one argument(or none) and will ignore additional arguments.
+                script.onload = () => {
+                    console.log("@onload: the script was succesfully loaded, we can consider the promise fulfilled so let's call resolve()");
+                    resolve(script);
+                }
+                script.onerror = () => {
+                    console.log("@onerror: the script wasn't loaded, we can consider the promise rejected so let's call reject()");
 
-            resolve("Finished doing stuff.")
-            // reject(new Error("Whoops!"))
-        }, 1000)
-    });
+                    reject(new Error(`Script load error for ${src}`));
+                }
 
-    // always runs when the promise is settled: be it resolve or reject. It is NOT meant to process a promise result.
-    promise.finally(function () {
-        console.log("Reset loading indicator, whether promise is fulfilled or rejected");
-    })
+                document.head.append(script);
+            }, 1000)
+        })
+    }
 
-    // Per vedere risultato -> stampa nella console del browser la variabile promise
+    let promise = loadScript('js/dummyLoadScript.js');
+
+    promise
+        .then(function (script) {
+            console.log(`${script.src} is loaded!`),
+            functionInLate();
+        })
+        .catch(error => {
+            new Error(`Zio, errore nel caricare lo script`)
+        });
 </script>
 
 </body>
