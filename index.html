@@ -18,21 +18,16 @@
             // the executor should perform a job(usually something that takes time) and then call resolve or reject to change the state of the corresponding promise object.
             // resolve / reject expect only one argument(or none) and will ignore additional arguments.
 
-            resolve("Finished doing stuff.")
             reject(new Error("Whoops!"))
+            resolve("Finished doing stuff.")
         }, 1000)
     });
 
-    promise.then(
-        // The first argument of.then is a function that runs when the promise is resolved, and receives the result.
-        function (result) {
-            alert(result);
-        },
-        // The second argument of.then is a function that runs when the promise is rejected, and receives the error.
-        function (error) {
-            alert(error);
-        }
-    );
+    // equivalent to run .then(null, errorHandlingFunction)
+    promise.catch(function (error) {
+        console.log("Hehe errore!");
+        alert(error);
+    })
 
     // Per vedere risultato -> stampa nella console del browser la variabile promise
 </script>
