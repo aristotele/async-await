@@ -28,7 +28,10 @@
 
 
 	loadScript('js/dummyLoadScript.js', () => {
-		functionInLate();
+		// functionInLate();
+		loadScript('js/script2.js', () => {
+			secondScriptFunc();
+		})
 	});
 </script>
 
