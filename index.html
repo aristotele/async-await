@@ -11,53 +11,32 @@
 
 
 <script>
-    let markers = [];
+    function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+            setTimeout(() => {
+                let script = document.createElement('script');
+                script.src = src;
 
-    // gps-positions (service, period)
-    let getGpsPositionsPromise = new Promise(resolve => {
-        let gpsPositions = [
-            { index: 1 },
-            { index: 2 },
-            { index: 3 },
-            { index: 4 },
-            { index: 5 },
-        ];
+                script.onload = () => resolve(script);
+                script.onerror = () => reject(new Error(`Script load error for ${src}`));
 
-        setTimeout(() => {
-            resolve(gpsPositions);
-        }, 1000)
-    })
-    .then(gpsPositions => {
-        retrievingAllMarkersPromise = new Promise(resolve => {
+                document.head.append(script);
+            }, 1000);
+        });
+    }
 
-            // per ogni gps-position, ritrova lettura
-            gpsPositions.forEach((gpsPosition, index) => {
+    let promise = loadScript("js/dummyLoadScript.js")
+        .then(script => {
+            // loadScript("js/script2.js")
 
-                // simulate axios call to db
-                axiosCall = new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve(Math.floor(Math.random() * 100));
-                    }, 500)
-                });
-
-                // create marker when api call come back
-                axiosCall.then(reading => {
-                    console.log(`BACK FROM API, reading for gps #${gpsPosition.index} is ${reading}`);
-                    markers.push(reading)
-
-                    // resolve promise of retrieving all readings
-                    if (index === (gpsPositions.length - 1)) {
-                        console.log("Finished retrieving readings");
-                        resolve(gpsPositions);
-                    }
-                });
-            })
+            //  a call to promise.then() returns a promise, so that we can call the next .then() on it. When a handler returns a value, it becomes the result of that promise
+            // I must NOT use resolve because it can only be used inside a promise. then() will also return a promise but the result is triggered by using the 'return' keyword
+            return "By using return I'll be the result passed to the next handler";
         })
-        .then(data => {
-            console.log("Init map with markers", markers);
-            // console.log(data);
+        .then(result => {
+            console.log(result);
+            loadScript("js/script3.js")
         })
-    })
 
 </script>
 
