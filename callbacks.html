@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Callbacks</title>
+</head>
+<body>
+
+<script>
+	function loadScript(src, callback) {
+		setTimeout(() => {
+			let script = document.createElement('script');
+			script.src = src;
+
+			// define a behavior when the script is loaded
+			// questo e' il momento in cui eseguire cio' che ti ho descritto
+			// callback();
+			script.onload = function () {
+				// console.log(callback);
+				callback();
+			}
+			// script.onload = () => callback(script)
+
+			document.head.appendChild(script)
+
+		}, 1000);
+	}
+
+	// gli passo la definizione di COSA voglio fare, MA non lo faccio (al momento non posso)
+	loadScript('./js/dummyLoadScript.js', function () {
+		functionInLate();
+		// console.log('Sono il prototipo di una funzione invocare successivamente');
+	});
+
+	console.log('Not waiting for dummy scripts');
+</script>
+</body>
+</html>
