@@ -18,15 +18,14 @@
             // the executor should perform a job(usually something that takes time) and then call resolve or reject to change the state of the corresponding promise object.
             // resolve / reject expect only one argument(or none) and will ignore additional arguments.
 
-            reject(new Error("Whoops!"))
             resolve("Finished doing stuff.")
+            // reject(new Error("Whoops!"))
         }, 1000)
     });
 
-    // equivalent to run .then(null, errorHandlingFunction)
-    promise.catch(function (error) {
-        console.log("Hehe errore!");
-        alert(error);
+    // always runs when the promise is settled: be it resolve or reject. It is NOT meant to process a promise result.
+    promise.finally(function () {
+        console.log("Reset loading indicator, whether promise is fulfilled or rejected");
     })
 
     // Per vedere risultato -> stampa nella console del browser la variabile promise
