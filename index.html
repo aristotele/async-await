@@ -1,38 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 
-	<script src="js/app.js"></script>
+    <script src="js/app.js"></script>
 </head>
 <body>
 
 
 <script>
-	function loadScript(src, callback) {
+    function loadScript(src, callback) {
 
-		// simulate network latency
-		setTimeout(() => {
-			let script = document.createElement('script');
-			script.src = src;
+        // Timeout simply simulate network latency (could be removed)
+        setTimeout(() => {
+            let dummyVariableToReturnOnSuccess = 'Dummy String To Return On Success';
 
-			script.onload = () => {
-				callback();
-			};
+            let script = document.createElement('script');
+            script.src = src;
+            // script.src = 'not-valid-script-path; // to uncomment for see error handling
 
-			document.head.append(script);
-		}, 1000)
-	}
+            script.onload = () => {
+                callback(null, dummyVariableToReturnOnSuccess);
+            };
+
+            script.onerror = () => {
+                callback(new Error(`Zio, errore nel caricare ${src}`));
+            }
+
+            document.head.append(script);
+        }, 1000)
+    }
 
 
-	loadScript('js/dummyLoadScript.js', () => {
-		// functionInLate();
-		loadScript('js/script2.js', () => {
-			secondScriptFunc();
-		})
-	});
+    loadScript('js/dummyLoadScript.js', (error, result) => {
+        if (error) {
+            console.error(error);
+        } else {
+            console.log(result);
+            // functionInLate();
+        }
+    });
 </script>
 
 </body>
