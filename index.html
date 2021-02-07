@@ -11,47 +11,58 @@
 
 
 <script>
-    // Implici try catch in promise's excecutor
-    new Promise((resolve, reject) => {
-        throw new Error('Whoops!');
+    let responses = [];
+
+    let globalPromise = Promise.all([
+        new Promise(resolve => {
+            return setTimeout(() => {
+                responses.push(1);
+                resolve(1);
+            }, 3000)
+        }),
+        new Promise(resolve => {
+            return setTimeout(() => {
+                responses.push(2);
+                resolve(2);
+            }, 1000)
+        }),
+        new Promise((resolve, reject) => reject(new Error("Whoops!"))),
+        new Promise(resolve => {
+            return setTimeout(() => {
+                responses.push(3);
+                resolve(3);
+            }, 2000)
+        }),
+        // new Promise((resolve, reject) => {throw new Error("Whoops!")}),
+        // new Promise(resolve => setTimeout(() => resolve(2), 1000)),
+        // new Promise(resolve => setTimeout(() => resolve(3), 2000)),
+    ])
+    .catch(err => {
+        console.log(err);
     })
-    .catch(error => {
-        console.log("Ho catchato l'errore");
-    })
-    .then(() => {
-        console.log("vado avanti dopo aver catchato l'errore.");
-    })
-
-    // // Catching inside .then()
-    // new Promise((resolve, reject) => {
-    //     resolve("ok");
-    // }).then((result) => {
-    //     blabla(); // no such function
-    // }).catch(alert);
+    .then(result => console.log('result',result));
 
 
-    // // Global event listener approach
-    // window.addEventListener('unhandledrejection', function (event) {
-    //     // the event object has two special properties:
-    //     console.log(event.promise); // [object Promise] - the promise that generated the error
-    //     console.log(event.reason); // Error: Whoops! - the unhandled error object
-    // });
+    // let urls = [
+    //     'https://api.github.com/users/iliakan',
+    //     'https://api.github.com/users/remy',
+    //     'https://api.github.com/users/jeresig'
+    // ];
 
-    // // no catch block
-    // new Promise(function () {
-    //     noSuchFunction(); // Error here (no such function)
+    // // create a promise for each url to fetch
+    // let requests = urls.map((url) => {
+    //     return fetch(url);
     // })
-    // .then(() => {
-    //     // successful promise handlers, one or more
-    //     console.log("Won't return");
-    // })
 
-    // // tasks 1
-    // new Promise(function (resolve, reject) {
-    //     setTimeout(() => {
-    //         throw new Error("Whoops!");
-    //     }, 1000);
-    // }).catch(alert);
+    // console.log(requests);
+
+    // // once all promise have been settled, log their status
+    // Promise.all(requests)
+    //     .then(responses => {
+    //         responses.forEach(
+    //             response => console.log(`${response.url}: ${response.status}`)
+    //         )
+    //     })
 
 </script>
 
