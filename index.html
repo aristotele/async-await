@@ -11,60 +11,58 @@
 
 
 <script>
-    let responses = [];
+    // Polyfill
+    if (! Promise.myAllSettled) {
+        const rejectHandler = function (reason) {
+            return {
+                "status": "rejected",
+                "reason": reason
+            }
+        };
 
-    let globalPromise = Promise.allSettled([
-        new Promise(resolve => {
-            return setTimeout(() => {
-                responses.push(1);
-                resolve(1);
-            }, 3000)
-        }),
-        new Promise(resolve => {
-            return setTimeout(() => {
-                responses.push(2);
-                resolve(2);
-            }, 1000)
-        }),
+        const resolveHandler = function (value) {
+            return {
+                "status": "fulfilled",
+                "value": value
+            }
+        };
+
+        // take all promised, e passagli gli handler
+        Promise.myAllSettled = function (promises) {
+            // convert all 'promises' passed as argument to real promises objects
+            const convertedPromises = promises.map(p => {
+                return Promise.resolve(p)
+                // .then(
+                //     fulfilled => {
+                //         console.log('fulfilled', fulfilled);
+                //         return fulfilled;
+                //     },
+                //     rejected => {
+                //         console.error('rejected', rejected);
+                //         throw rejected
+                //     }
+                // )
+                .then(resolveHandler, rejectHandler);
+            });
+
+            console.log(convertedPromises);
+
+            return Promise.all(convertedPromises)
+        }
+    }
+
+
+    let globalPromise = Promise.myAllSettled([
+        new Promise(resolve => setTimeout(() => resolve(1), 1000)),
+        new Promise(resolve => setTimeout(() => resolve(2), 500)),
         new Promise((resolve, reject) => reject(new Error("Whoops!"))),
-        new Promise(resolve => {
-            return setTimeout(() => {
-                responses.push(3);
-                resolve(3);
-            }, 2000)
-        }),
+        new Promise(resolve => setTimeout(() => resolve(3), 800)),
         "ehi"
-        // new Promise((resolve, reject) => {throw new Error("Whoops!")}),
-        // new Promise(resolve => setTimeout(() => resolve(2), 1000)),
-        // new Promise(resolve => setTimeout(() => resolve(3), 2000)),
     ])
     .catch(err => {
         console.log(err);
     })
     .then(result => console.log('result', result));
-
-
-    // let urls = [
-    //     'https://api.github.com/users/iliakan',
-    //     'https://api.github.com/users/remy',
-    //     'https://api.github.com/users/jeresig'
-    // ];
-
-    // // create a promise for each url to fetch
-    // let requests = urls.map((url) => {
-    //     return fetch(url);
-    // })
-
-    // console.log(requests);
-
-    // // once all promise have been settled, log their status
-    // Promise.all(requests)
-    //     .then(responses => {
-    //         responses.forEach(
-    //             response => console.log(`${response.url}: ${response.status}`)
-    //         )
-    //     })
-
 </script>
 
 </body>
