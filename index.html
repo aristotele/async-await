@@ -13,7 +13,7 @@
 <script>
     let responses = [];
 
-    let globalPromise = Promise.all([
+    let globalPromise = Promise.allSettled([
         new Promise(resolve => {
             return setTimeout(() => {
                 responses.push(1);
@@ -33,6 +33,7 @@
                 resolve(3);
             }, 2000)
         }),
+        "ehi"
         // new Promise((resolve, reject) => {throw new Error("Whoops!")}),
         // new Promise(resolve => setTimeout(() => resolve(2), 1000)),
         // new Promise(resolve => setTimeout(() => resolve(3), 2000)),
@@ -40,7 +41,7 @@
     .catch(err => {
         console.log(err);
     })
-    .then(result => console.log('result',result));
+    .then(result => console.log('result', result));
 
 
     // let urls = [
