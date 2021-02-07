@@ -11,34 +11,48 @@
 
 
 <script>
-    function loadJson(url) {
-        return fetch(url)
-            .then(response => { return response.json() })
-    }
+    // Implici try catch in promise's excecutor
+    new Promise((resolve, reject) => {
+        throw new Error('Whoops!');
+    })
+    .catch(error => {
+        console.log("Ho catchato l'errore");
+    })
+    .then(() => {
+        console.log("vado avanti dopo aver catchato l'errore.");
+    })
 
-    function loadGithubUserData(name) {
-        return loadJson(`https://api.github.com/users/${name}`)
-    }
+    // // Catching inside .then()
+    // new Promise((resolve, reject) => {
+    //     resolve("ok");
+    // }).then((result) => {
+    //     blabla(); // no such function
+    // }).catch(alert);
 
-    function showAvatar(githubUser) {
-        return new Promise(resolve => {
-            let img = document.createElement('img');
-            img.src = githubUser.avatar_url;
-            img.style.height = '100px'
-            img.style.width = '100px'
-            document.body.append(img);
 
-            setTimeout(() => {
-                img.remove()
-                resolve(githubUser);
-            }, 1000);
-        });
-    }
+    // // Global event listener approach
+    // window.addEventListener('unhandledrejection', function (event) {
+    //     // the event object has two special properties:
+    //     console.log(event.promise); // [object Promise] - the promise that generated the error
+    //     console.log(event.reason); // Error: Whoops! - the unhandled error object
+    // });
 
-    loadJson('js/githubUser.json')
-        .then(user => loadGithubUserData(user.name))
-        .then(showAvatar) // equivalent to .then(githubUser => showAvatar(githubUser))
-        .then(githubUser => console.log(`Removed image of ${githubUser.name}!`))
+    // // no catch block
+    // new Promise(function () {
+    //     noSuchFunction(); // Error here (no such function)
+    // })
+    // .then(() => {
+    //     // successful promise handlers, one or more
+    //     console.log("Won't return");
+    // })
+
+    // // tasks 1
+    // new Promise(function (resolve, reject) {
+    //     setTimeout(() => {
+    //         throw new Error("Whoops!");
+    //     }, 1000);
+    // }).catch(alert);
+
 </script>
 
 </body>
