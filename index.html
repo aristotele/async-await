@@ -11,58 +11,32 @@
 
 
 <script>
-    // Polyfill
-    if (! Promise.myAllSettled) {
-        const rejectHandler = function (reason) {
-            return {
-                "status": "rejected",
-                "reason": reason
-            }
-        };
+    let cache = new Map();
 
-        const resolveHandler = function (value) {
-            return {
-                "status": "fulfilled",
-                "value": value
-            }
-        };
-
-        // take all promised, e passagli gli handler
-        Promise.myAllSettled = function (promises) {
-            // convert all 'promises' passed as argument to real promises objects
-            const convertedPromises = promises.map(p => {
-                return Promise.resolve(p)
-                // .then(
-                //     fulfilled => {
-                //         console.log('fulfilled', fulfilled);
-                //         return fulfilled;
-                //     },
-                //     rejected => {
-                //         console.error('rejected', rejected);
-                //         throw rejected
-                //     }
-                // )
-                .then(resolveHandler, rejectHandler);
-            });
-
-            console.log(convertedPromises);
-
-            return Promise.all(convertedPromises)
+    function loadFromCache(url) {
+        if (cache.has(url)) {
+            console.log(`return from cache`);
+            console.log('from cache', cache.get(url));
+            return Promise.resolve(cache.get(url));
         }
+
+        return fetch(url)
+        .then(res => res.json())
+        .then(json => {
+                console.log(`Fetching for 1st time...`);
+                cache.set(url, json);
+                return json;
+            })
     }
 
+    loadFromCache(`https://api.github.com/users/aristotele`)
+        .then(user => console.log(user));
 
-    let globalPromise = Promise.myAllSettled([
-        new Promise(resolve => setTimeout(() => resolve(1), 1000)),
-        new Promise(resolve => setTimeout(() => resolve(2), 500)),
-        new Promise((resolve, reject) => reject(new Error("Whoops!"))),
-        new Promise(resolve => setTimeout(() => resolve(3), 800)),
-        "ehi"
-    ])
-    .catch(err => {
-        console.log(err);
-    })
-    .then(result => console.log('result', result));
+    setTimeout(() => {
+        loadFromCache(`https://api.github.com/users/aristotele`)
+            .then(user => console.log(user));
+    }, 1000);
+
 </script>
 
 </body>
