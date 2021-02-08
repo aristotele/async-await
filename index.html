@@ -11,32 +11,125 @@
 
 
 <script>
-    let cache = new Map();
+    // chiamo un servizio web per fare un calcolo complesso
+    // io non so quanto tempo ci impiega
+    // però so cosa voglio che succeda una volta che ritorna il risultato (es. voglio alert in pagina)
 
-    function loadFromCache(url) {
-        if (cache.has(url)) {
-            console.log(`return from cache`);
-            console.log('from cache', cache.get(url));
-            return Promise.resolve(cache.get(url));
-        }
+    // 1a. error first callback-based function
+    // function doComplexOperation(num1, num2, callback) {
+    //     setTimeout(() => {
+    //         if (!num1 || !num2) {
+    //             return callback(new Error("Missing arguments!"))
+    //         }
 
-        return fetch(url)
-        .then(res => res.json())
-        .then(json => {
-                console.log(`Fetching for 1st time...`);
-                cache.set(url, json);
-                return json;
-            })
+    //         return callback(null, (num1 + num2)) // result computed after 1 second
+    //     }, 1000)
+    // }
+
+    // 2a. Invoking function with callback-based approach
+    // let result = doComplexOperation(2, 3, function(error, result) {
+    //     // i.e. però so cosa voglio che succeda una volta che ritorna il risultato
+    //     if (error) {
+    //         console.error(error);
+    //     } else {
+    //         console.log(result);
+    //     }
+    // });
+
+    // 1b. Promisified callback-based function
+    // function doComplexOperationPromise(num1, num2) {
+    //     return new Promise((resolve, reject) => {
+    //         doComplexOperation(num1, num2, function(error, result) {
+    //             if (error) {
+    //                 reject(error);
+    //             } else {
+    //                 resolve(result)
+    //             }
+    //         })
+    //     })
+    // }
+
+    // 2b. Invoking promisified function
+    // doComplexOperationPromise(4, 6).then(res => console.log(res))
+
+
+    // error first callback-based function
+    function doComplexOperation(num1, num2, callback) {
+        setTimeout(() => {
+            if (!num1 || !num2) {
+                return callback(new Error("Missing arguments!"))
+            }
+
+            return callback(null, (num1 + num2)) // result computed after 1 second
+        }, 1000)
     }
 
-    loadFromCache(`https://api.github.com/users/aristotele`)
-        .then(user => console.log(user));
+    // Invoking function with callback-based approach
+    // let result = doComplexOperation(2, 3, function(error, result) {
+    //     // i.e. però so cosa voglio che succeda una volta che ritorna il risultato
+    //     if (error) {
+    //         console.error(error);
+    //     } else {
+    //         console.log(result);
+    //     }
+    // });
 
-    setTimeout(() => {
-        loadFromCache(`https://api.github.com/users/aristotele`)
-            .then(user => console.log(user));
-    }, 1000);
 
+    function myPromisifier(functionCallbackBased) {
+        return function(...args) {
+            // qualsiasi argomento verrà passato, io in anticipo posso decidere come manipolarlo perché ho accesso ad ...args
+            return new Promise((resolve, reject) => {
+
+                function customCallbackToHandlePromise(error, result) {
+                    if (error) { reject(error) }
+                    else { resolve(result) }
+                }
+
+                args.push(customCallbackToHandlePromise)
+                // invoco la funzione con i suoi argomenti (this lascialo perdere, è il contesto ma serve specificarlo perché lo richiede il metedo .call)
+                functionCallbackBased.call(this, ...args)
+
+            })
+        }
+    }
+
+    doComplexOperationPromisified = myPromisifier(doComplexOperation);
+
+    doComplexOperationPromisified(2, 2).then(alert)
+
+
+    // function loadScript(src, callback) {
+    //     let script = document.createElement('script');
+    //     script.src = src;
+
+    //     script.onload = () => callback(null, script);
+    //     script.onerror = () => callback(new Error(`Script load error for ${src}`));
+
+    //     document.head.append(script);
+    // }
+
+    // // loadScript('js/script2.js', function (error, scriptLoaded) {
+    // //     if (error) {
+    // //         console.log('Ehi dude, you got an error');
+    // //     } else {
+    // //         console.log(scriptLoaded);
+    // //     }
+    // // });
+
+    // let loadScriptPromise = function(src) {
+    //     return new Promise((resolve, reject) => {
+    //         loadScript(src, function(error, scriptLoaded) {
+    //             if (error) {
+    //                 reject(error)
+    //             } else {
+    //                 resolve(scriptLoaded)
+    //             }
+    //         });
+    //     });
+    // }
+
+    // loadScriptPromise('js/script2.js')
+    //     .then(script => console.log(script))
 </script>
 
 </body>
