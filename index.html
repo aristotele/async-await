@@ -10,11 +10,47 @@
 <body>
 
 <script>
-    let promise = Promise.reject(new Error("Promise Failed!"));
-    setTimeout(() => promise.catch(err => alert('caught')), 1000);
+    // let promise = Promise.resolve();
+    // promise.then(() => setTimeout(() => alert('ehi'), 5000));
 
-    // Error: Promise Failed!
-    window.addEventListener('unhandledrejection', event => alert(event.reason));
+    // Promise.resolve().then(() => alert('second'))
+
+    // Classical way
+    function oldStyle() {
+        return new Promise(resolve => resolve(1999))
+    }
+
+    oldStyle().then(res => console.log(res))
+
+    // async-await way
+    async function demo() {
+        let promise = new Promise(resolve => {
+            setTimeout(() => resolve('async function done'), 2000)
+        })
+
+        let result = await promise;
+
+        return result;
+    }
+
+    demo().then(res => console.log(res))
+
+    // translation of async-await way for classical way
+    function demoOld() {
+        let promise = new Promise(resolve => {
+            setTimeout(() => resolve('domoOld done'), 2000)
+        })
+
+        let result = promise.then(res => res);
+
+        return result;
+    }
+
+    demoOld().then(res => console.log(res))
+
+
+
+
 </script>
 
 </body>
